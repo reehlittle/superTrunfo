@@ -1,10 +1,16 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 
-// import { Container } from './styles';
+import { Container, CardName, List, OptionName, OptionValue } from './styles';
 
-export default function Card() {
+export default function CardGame({data, ...rest}) {
   return (
-    <View />
+    <View>
+      <CardName>O coisa feia</CardName>
+      {/*<List>
+        <OptionName></OptionName>
+        <OptionValue></OptionValue>
+      </List> */}
+    </View>
   );
 }
