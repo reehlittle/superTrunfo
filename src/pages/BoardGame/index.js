@@ -28,8 +28,8 @@ export default function BoardGame() {
     console.tron.log('ShuffleAndDeal');
     var cardArray = data;
     cardArray.sort(() => Math.random() - 0.5);
-    const pd = Object.entries(cardArray).slice(0,15).map(entry => entry[1]);
-    const cd = Object.entries(cardArray).slice(16,31).map(entry => entry[1]);
+    const pd = Object.entries(cardArray).slice(0,16).map(entry => entry[1]);
+    const cd = Object.entries(cardArray).slice(16,32).map(entry => entry[1]);
     setPlayerDeck(pd);
     setComputerDeck(cd);
   }
@@ -47,22 +47,19 @@ export default function BoardGame() {
     if(playerDeck.length && computerDeck.length) {
       setPlayerActiveCard(playerDeck[0]);
       setComputerActiveCard(computerDeck[0]);
-
-    setTimeout(function () {
-      console.tron.log(playerActiveCard);
-      console.tron.log(computerActiveCard);
-    }, 5000);
-
     }
     else {
        finishGame();
     }
   }
 
-  function handleOptionSelect() {
+  function handleOptionSelect(option) {
     //load the values from both cards and compare.
     //put both cards in the end of winner's  array.
     //newRound()
+
+    console.tron.log(option);
+    console.tron.log(computerActiveCard.options[option.index]);
   }
 
   function finishGame() {
@@ -74,8 +71,8 @@ export default function BoardGame() {
 
   return (
     <Container>
-      <Text>Teste</Text>
-      <CardGame data={playerActiveCard}></CardGame>
+      <CardGame data={playerActiveCard} handleOptionSelect={handleOptionSelect}></CardGame>
+      <CardGame data={computerActiveCard} handleOptionSelect={handleOptionSelect}></CardGame>
     </Container>
   );
 }

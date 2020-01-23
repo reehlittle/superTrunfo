@@ -1,16 +1,24 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 
-import { Container, CardName, List, OptionName, OptionValue } from './styles';
+import { Container, Name, List, OptionName, OptionValue } from './styles';
 
-export default function CardGame({data, ...rest}) {
+export default function CardGame({data, handleOptionSelect, ...rest}) {
+
+  function handlePress(option) {
+    handleOptionSelect(option);
+  }
+
   return (
-    <View>
-      <CardName>O coisa feia</CardName>
-      {/*<List>
-        <OptionName></OptionName>
-        <OptionValue></OptionValue>
-      </List> */}
-    </View>
+    <Container>
+      <Name>{data.cardName}</Name>
+      <List 
+          data={data.options}
+          keyExtractor={item => String(item.name)}
+          renderItem={({item}) => 
+        <>
+          <OptionName onPress={() => handlePress(item)}>{item.name} {item.value}</OptionName>
+        </>
+        }/>
+    </Container>
   );
 }
