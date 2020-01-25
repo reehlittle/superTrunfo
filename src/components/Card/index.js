@@ -2,17 +2,17 @@ import React from 'react';
 
 import { Container, Name, List, OptionName, OptionValue } from './styles';
 
-export default function CardGame({data, handleOptionSelect, ...rest}) {
+export default function CardGame({data, handleOptionSelect, player, ...rest}) {
 
   function handlePress(option) {
-    handleOptionSelect(option);
+    player ? handleOptionSelect(option.index): null ;
   }
 
   return (
-    <Container>
+    <Container player={player}>
       <Name>{data.cardName}</Name>
       <List 
-          data={data.options}
+          data={data.cardOptions}
           keyExtractor={item => String(item.name)}
           renderItem={({item}) => 
         <>

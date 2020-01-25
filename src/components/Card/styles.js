@@ -1,12 +1,16 @@
-import styled from 'styled-components/native';
+import styled, { css } from 'styled-components/native';
 
-export const Container = styled.View`
+export const Container = styled.View.attrs(props => ({}))`
   width: 120px;
   height: 200px;
   margin: 10px;
   border: 2px solid palevioletred;
   border-radius: 4px;
   align-items: center;
+  ${props =>
+    !props.player && css`
+      background: #6F5698;
+  `};
 `;
 
 export const Name = styled.Text`

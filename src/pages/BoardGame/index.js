@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Text } from 'react-native';
+import { View, Text, Button } from 'react-native';
+import Modal from 'react-native-modal';
 
 import { Container } from './styles';
-import CardGame from '../../components/Card';
+import Card from '../../components/Card';
 import data from '../../data/cars';
 
 export default function BoardGame() {
@@ -11,68 +12,122 @@ export default function BoardGame() {
   const [playerTurn, setPlayerTurn] = useState(true);
   const [playerActiveCard, setPlayerActiveCard] = useState({});
   const [computerActiveCard, setComputerActiveCard] = useState({});
-
+  const [modalVisible, setModalVisible] = useState(false);
   useEffect(() => {
-    //On load board game
-    //Divide cards in two arrays and start a new game
     shuffleAndDeal();
-    //await newRound();
   }, []);
 
   useEffect(() => {
-    newRound();
+    //make it not call newRound when active cards are not ready.
+    console.tron.log(`PlayerActiveCard: ${playerActiveCard.cardName}`);
+    console.tron.log(`ComputerActiveCard: ${computerActiveCard.cardName}`);
+      newRound();
   }, [playerDeck, computerDeck]);
 
+  useEffect(() => {
+    console.tron.log(`playerTurn: ${playerTurn}`);
+    if(!playerTurn) {
+      handleComputerOptionSelect();
+    }
+  }, [playerTurn]);
+
   function shuffleAndDeal() {
-    //Shuffle cards and divide
     console.tron.log('ShuffleAndDeal');
     var cardArray = data;
     cardArray.sort(() => Math.random() - 0.5);
+
     const pd = Object.entries(cardArray).slice(0,16).map(entry => entry[1]);
     const cd = Object.entries(cardArray).slice(16,32).map(entry => entry[1]);
+    
     setPlayerDeck(pd);
     setComputerDeck(cd);
   }
 
   function newRound() {
-    //both arrays have cards
-    // ? load first card from each array
-      // is playerTurn
-      // ? do nothing, wait for action
-      // : randon choose option and handleOptionSelect()
-    // : finishGame()
     console.tron.log('newRound');
-    console.tron.log(playerDeck);
-    console.tron.log(computerDeck);
-    if(playerDeck.length && computerDeck.length) {
-      setPlayerActiveCard(playerDeck[0]);
-      setComputerActiveCard(computerDeck[0]);
-    }
-    else {
-       finishGame();
-    }
+      if(playerDeck.length != 0 && computerDeck.length != 0) {
+        if(playerDeck.length && computerDeck.length){
+          setPlayerActiveCard(playerDeck[0]);
+          setComputerActiveCard(computerDeck[0]);
+          if(!playerTurn){
+            handleComputerOptionSelect();
+          }
+        }
+      }
+      else {
+        finishGame();
+      }
   }
 
   function handleOptionSelect(option) {
-    //load the values from both cards and compare.
-    //put both cards in the end of winner's  array.
-    //newRound()
+    console.tron.log('handleOptionSelect');
+    console.tron.log(`Opção: ${option}`);
+    newPlayerDeck = playerDeck.filter((card) => {
+      return playerActiveCard.cardId != card.cardId;
+    });
+    newComputerDeck = computerDeck.filter((card) => {
+      return computerActiveCard.cardId != card.cardId;
+    });
+    if(playerActiveCard.cardOptions[option].value >= computerActiveCard.cardOptions[option].value) {
+      newPlayerDeck.push(playerActiveCard);
+      newPlayerDeck.push(computerActiveCard);
+      setPlayerTurn(true);
+    }
+    else {
+      newComputerDeck.push(computerActiveCard);
+      newComputerDeck.push(playerActiveCard);
+      setPlayerTurn(false);
+    }
+    setPlayerDeck(newPlayerDeck);
+    setComputerDeck(newComputerDeck);
+  }
 
-    console.tron.log(option);
-    console.tron.log(computerActiveCard.options[option.index]);
+  function handleComputerOptionSelect(){
+    console.tron.log('handleComputerOptionSelect');
+    //get game dificulty
+    const dificulty = 'easy';
+    let option = {};
+    switch(dificulty) {
+      case 'easy':
+        option = random();
+      case 'hard' :
+        option = random();
+    };
+    handleOptionSelect(option);
   }
 
   function finishGame() {
     //show modal with score and button to new game or home
     console.tron.log('finishGame');
+    setModalVisible(true);
   }
 
+  function random() { // min and max included 
+    return Math.floor(Math.random() * (2 - 1 +1) + 1) -1;
+  }
 
+  function newGame(){
+    console.tron.log('NewGame');
+    setPlayerDeck({});
+    setComputerDeck({});
+    setPlayerTurn(true);
+    setPlayerActiveCard({});
+    setComputerActiveCard({});
+    setModalVisible(false);
+    shuffleAndDeal();
+  }
 
   return (
     <Container>
-      <CardGame data={playerActiveCard} handleOptionSelect={handleOptionSelect}></CardGame>
-      <CardGame data={computerActiveCard} handleOptionSelect={handleOptionSelect}></CardGame>
+      <Card data={playerActiveCard} handleOptionSelect={handleOptionSelect} player={playerTurn}></Card>
+      <Card data={computerActiveCard} handleOptionSelect={handleOptionSelect} player={false}></Card>
+
+      <Modal isVisible={modalVisible}>
+          <View style={{ flex: 1 }}>
+            <Text>Game Over!</Text>
+            <Button title="New Game" onPress={newGame} />
+          </View>
+        </Modal>
     </Container>
   );
 }
