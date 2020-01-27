@@ -36,6 +36,8 @@ target 'super_trunfo' do
 
   pod 'BVLinearGradient', :path => '../node_modules/react-native-linear-gradient'
 
+  pod 'SRSRadialGradient', :path => '../node_modules/react-native-radial-gradient'
+
   target 'super_trunfoTests' do
     inherit! :search_paths
     # Pods for testing
