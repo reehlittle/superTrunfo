@@ -1,15 +1,20 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import { Text } from 'react-native';
+import { Text, View, TouchableWithoutFeedback, Animated } from 'react-native';
 
 import Background from '../../components/Background';
+import { NewGameButton } from './styles';
 
-export default class Dashboard extends Component {
-  render() {
-    return (
-      <Background>
-        <Text>Dashboard</Text>
-      </Background>
-    );
+export default function Dashboard() {
+  function handleNewGame() {
+    console.tron.log('handleNewGame');
   }
+
+  return (
+    <Background>
+      <Text>Dashboard</Text>
+      <NewGameButton loading={false} onPress={handleNewGame} style={{'h': 180, 'w': 180, 'c': '#ffb300'}}>New Game</NewGameButton>
+    </Background>
+  );
+
 }
