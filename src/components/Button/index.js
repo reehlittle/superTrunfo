@@ -1,19 +1,15 @@
 import React from 'react';
-import { Container, Text, ShadowView, ButtonView } from './styles';
+import { Container, ShadowView, ButtonView, Text } from './styles';
 
-export default function Button({ children, loading, style, ...rest }) {
-
-  console.tron.log(style);
+export default function Button({ children, press, prettier, ...rest }) {
 
   return (
     <Container { ...rest }>
-      <ShadowView color={'#ffb300'}>
-        <ButtonView color={'#ffb300'}>
+      <ShadowView color={prettier.c} height={prettier.h} width={prettier.w}>
+        <ButtonView color={prettier.c} press={press}>
           <Text>{children}</Text>
         </ButtonView>
       </ShadowView>
     </Container>
   );
 }
-
-

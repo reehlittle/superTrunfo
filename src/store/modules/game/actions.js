@@ -1,7 +1,7 @@
-export function newGameRequest() {
+export function newGameRequest(gameMode) {
   return {
     type: '@game/NEW_GAME_REQUEST',
-    payload: {}
+    payload: {gameMode}
   };
 }
 
