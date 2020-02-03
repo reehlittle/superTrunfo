@@ -22,11 +22,10 @@ export const ButtonView = styled.View`
   justify-content: center;
 `;
 
-
 export const Text = styled.Text`
   /* @import url('https://fonts.googleapis.com/css?family=Londrina+Shadow&display=swap'); */
   /* font-family: 'Londrina Shadow'; */
   color: #fff;
   font-weight: bold;
-  font-size: 24px;
+  font-size: ${props => (props.textSize ? props.textSize : '24px')};
 `;

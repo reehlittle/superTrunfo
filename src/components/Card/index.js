@@ -1,24 +1,46 @@
 import React from 'react';
+import { Text } from 'react-native';
 
-import { Container, Name, List, OptionName, OptionValue } from './styles';
+import {
+  Container,
+  ProfileContainer,
+  CardImage,
+  Name,
+  OptionsContainer,
+  List,
+  OptionView,
+  OptionName,
+  OptionValue
+} from './styles';
 
 export default function CardGame({data, handleOptionSelect, player, ...rest}) {
 
   function handlePress(option) {
+    console.tron.log('handlePress');
     player ? handleOptionSelect(option.index): null ;
   }
 
   return (
     <Container player={player}>
-      <Name>{data.cardName}</Name>
-      <List 
+      <ProfileContainer>
+        <CardImage source={{uri: 'https://www.razaoautomovel.com/wp-content/uploads/2018/10/Volvo-XC40-34_925x520_acf_cropped.jpg'}}/>
+        <Name>{data.cardName}</Name>
+      </ProfileContainer>
+      <OptionsContainer>
+        <List
           data={data.cardOptions}
           keyExtractor={item => String(item.name)}
-          renderItem={({item}) => 
-        <>
-          <OptionName onPress={() => handlePress(item)}>{item.name} {item.value}</OptionName>
-        </>
+          renderItem={({item}) =>
+            <OptionView onPress={() => handlePress(item)}>
+              <OptionName>
+                <Text>{item.name}</Text>
+              </OptionName>
+              <OptionValue>
+                <Text>{item.value}</Text>
+              </OptionValue>
+            </OptionView>
         }/>
+      </OptionsContainer>
     </Container>
   );
 }

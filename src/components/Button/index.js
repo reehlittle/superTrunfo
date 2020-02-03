@@ -7,7 +7,7 @@ export default function Button({ children, press, prettier, ...rest }) {
     <Container { ...rest }>
       <ShadowView color={prettier.c} height={prettier.h} width={prettier.w}>
         <ButtonView color={prettier.c} press={press}>
-          <Text>{children}</Text>
+          <Text textSize={prettier.ts}>{children}</Text>
         </ButtonView>
       </ShadowView>
     </Container>

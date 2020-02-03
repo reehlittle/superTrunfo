@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, Button, Image } from 'react-native';
 import Modal from 'react-native-modal';
 
 import Background from '../../components/Background';
-import { 
-  Container, 
-  CompCardContainer, 
-  OptionsContainer, 
-  PlayerCardContainer, 
-  Score, 
-  Options 
+import {
+  Container,
+  CompCardContainer,
+  OptionsContainer,
+  PlayerCardContainer,
+  Score,
+  ScoreText,
+  ScoreSeparator,
+  ComputerScore,
+  PlayerScore,
+  Options,
+  HomeButton,
+  PassButton,
+  SurrenderButton
 } from './styles';
 import Card from '../../components/Card';
 import data from '../../data/cars';
@@ -21,7 +28,7 @@ export default function BoardGame() {
   const [playerActiveCard, setPlayerActiveCard] = useState({});
   const [computerActiveCard, setComputerActiveCard] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
-  
+
   useEffect(() => {
     shuffleAndDeal();
   }, []);
@@ -47,7 +54,7 @@ export default function BoardGame() {
 
     const pd = Object.entries(cardArray).slice(0,16).map(entry => entry[1]);
     const cd = Object.entries(cardArray).slice(16,32).map(entry => entry[1]);
-    
+
     setPlayerDeck(pd);
     setComputerDeck(cd);
   }
@@ -111,7 +118,7 @@ export default function BoardGame() {
     setModalVisible(true);
   }
 
-  function random() { // min and max included 
+  function random() { // min and max included
     return Math.floor(Math.random() * (2 - 1 +1) + 1) -1;
   }
 
@@ -130,22 +137,48 @@ export default function BoardGame() {
     <Background>
       <Container>
         <CompCardContainer>
-          {/* <Card data={computerActiveCard} 
-            handleOptionSelect={handleOptionSelect} 
+          {/* <Card data={computerActiveCard}
+            handleOptionSelect={handleOptionSelect}
             player={false}>
           </Card> */}
         </CompCardContainer>
         <OptionsContainer>
-          <Score></Score>
-          <Options></Options>
+          <Score>
+            <ComputerScore>
+              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
+              <ScoreText>{computerDeck.length}</ScoreText>
+            </ComputerScore>
+            <ScoreSeparator />
+            <PlayerScore>
+              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
+              <ScoreText>{playerDeck.length}</ScoreText>
+            </PlayerScore>
+          </Score>
+          <Options>
+            <HomeButton
+              press={false}
+              onPress={()=>{}}
+              prettier={{h:'40px',w:'100px',c:'#ffb300', ts:'12px'}}
+            >Home</HomeButton>
+            <PassButton
+              press={false}
+              onPress={()=>{}}
+              prettier={{h:'40px',w:'100px',c:'#09a0f9', ts:'12px'}}
+            >Pass</PassButton>
+            <SurrenderButton
+              press={false}
+              onPress={()=>{}}
+              prettier={{h:'40px',w:'100px',c:'#ff3437', ts:'12px'}}
+            >Surrender</SurrenderButton>
+          </Options>
         </OptionsContainer>
         <PlayerCardContainer>
-          <Card data={playerActiveCard} 
-            handleOptionSelect={handleOptionSelect} 
+          <Card data={playerActiveCard}
+            handleOptionSelect={handleOptionSelect}
             player={playerTurn}>
           </Card>
         </PlayerCardContainer>
-         
+
         <Modal isVisible={modalVisible}>
             <View style={{ flex: 1 }}>
               <Text>Game Over!</Text>

@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 import Button from '../../components/Button';
-import { RectButton } from 'react-native-gesture-handler';
-
 
 export const Container = styled.View`
   flex:1 ;
@@ -12,8 +10,6 @@ export const Container = styled.View`
 export const NewGameButton = styled(Button)``;
 
 export const ConfigButton = styled(Button)``;
-
-
 
 export const ModalContainer =  styled.View`
   height: 50%;
