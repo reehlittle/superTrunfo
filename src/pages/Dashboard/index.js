@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { Text, View, TouchableWithoutFeedback } from 'react-native';
+import { Text } from 'react-native';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -22,8 +22,10 @@ import {
 } from './styles';
 import { newGameRequest } from '../../store/modules/game/actions';
 
-export default function Dashboard() {
+export default Dashboard = ({ navigation }) =>{
   const dispatch = useDispatch();
+  const gameAuthorization = useSelector(state => state.game.authorization);
+
   const [newGameModal, setNewGameModal] = useState(false);
 
   function openNewGameModal() {
@@ -33,6 +35,12 @@ export default function Dashboard() {
   function handleNewGame(gameMode) {
     dispatch(newGameRequest(gameMode));
   }
+
+  useEffect(() => {
+    if(gameAuthorization) {
+      navigation.navigate('BoardGame');
+    }
+  }, [gameAuthorization]);
 
   function handleConfiguration(){
     console.tron.log('handleConfiguration');

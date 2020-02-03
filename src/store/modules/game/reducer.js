@@ -7,7 +7,8 @@ const INITIAL_STATE = {
     computerDeck: {},
     playerTurn: {}
   },
-  energy: 0
+  energy: 0,
+  authorization: false
 };
 
 export default function auth(state = INITIAL_STATE, action) {
@@ -16,6 +17,12 @@ export default function auth(state = INITIAL_STATE, action) {
       case '@game/NEW_GAME_REQUEST' : {
         //draft.energy = action.payload.energy;
         draft.onGoing.gameMode = action.payload.gameMode;
+        break;
+      }
+      case '@game/NEW_GAME_SUCCESS' : {
+        console.tron.log('Carambolas');
+        //draft.energy = action.payload.energy;
+        draft.authorization = true;
         break;
       }
     }

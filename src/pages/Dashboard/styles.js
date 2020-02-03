@@ -37,7 +37,7 @@ export const ModalBody = styled.View`
   align-items: center;
 `;
 
-export const CloseButton = styled.Button`
+export const CloseButton = styled.TouchableOpacity`
   width: 24px;
   height: 24px;
   border-radius: 12px;
@@ -49,12 +49,13 @@ export const CloseButton = styled.Button`
 
 export const ModalTitle = styled.View`
   height: 20%;
-  justify-content: center;
+  justify-content: flex-end;
 `;
 
 export const Title = styled.Text`
   color: #081c57;
   font-size: 24px;
+  font-weight: bold;
 `;
 
 export const EasyButton = styled(Button)``;

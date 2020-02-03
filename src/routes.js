@@ -8,5 +8,8 @@ createAppContainer(
   createSwitchNavigator({
     Dashboard,
     BoardGame
-  })
-);
+  },
+  {
+    initialRouteName: 'Dashboard'
+  }
+));

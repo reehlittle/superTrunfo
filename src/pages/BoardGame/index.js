@@ -2,7 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button } from 'react-native';
 import Modal from 'react-native-modal';
 
-import { Container } from './styles';
+import Background from '../../components/Background';
+import { 
+  Container, 
+  CompCardContainer, 
+  OptionsContainer, 
+  PlayerCardContainer, 
+  Score, 
+  Options 
+} from './styles';
 import Card from '../../components/Card';
 import data from '../../data/cars';
 
@@ -13,6 +21,7 @@ export default function BoardGame() {
   const [playerActiveCard, setPlayerActiveCard] = useState({});
   const [computerActiveCard, setComputerActiveCard] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
+  
   useEffect(() => {
     shuffleAndDeal();
   }, []);
@@ -118,16 +127,32 @@ export default function BoardGame() {
   }
 
   return (
-    <Container>
-      <Card data={playerActiveCard} handleOptionSelect={handleOptionSelect} player={playerTurn}></Card>
-      <Card data={computerActiveCard} handleOptionSelect={handleOptionSelect} player={false}></Card>
-
-      <Modal isVisible={modalVisible}>
-          <View style={{ flex: 1 }}>
-            <Text>Game Over!</Text>
-            <Button title="New Game" onPress={newGame} />
-          </View>
-        </Modal>
-    </Container>
+    <Background>
+      <Container>
+        <CompCardContainer>
+          {/* <Card data={computerActiveCard} 
+            handleOptionSelect={handleOptionSelect} 
+            player={false}>
+          </Card> */}
+        </CompCardContainer>
+        <OptionsContainer>
+          <Score></Score>
+          <Options></Options>
+        </OptionsContainer>
+        <PlayerCardContainer>
+          <Card data={playerActiveCard} 
+            handleOptionSelect={handleOptionSelect} 
+            player={playerTurn}>
+          </Card>
+        </PlayerCardContainer>
+         
+        <Modal isVisible={modalVisible}>
+            <View style={{ flex: 1 }}>
+              <Text>Game Over!</Text>
+              <Button title="New Game" onPress={newGame} />
+            </View>
+          </Modal>
+      </Container>
+    </Background>
   );
 }

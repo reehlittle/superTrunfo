@@ -7,7 +7,6 @@ export function newGameRequest(gameMode) {
 
 export function newGameSuccess() {
   return {
-    type: '@game/NEW_GAME_SUCCESS',
-    payload: {}
+    type: '@game/NEW_GAME_SUCCESS'
   };
 }
