@@ -16,7 +16,6 @@ import {
 export default function CardGame({data, handleOptionSelect, player, ...rest}) {
 
   function handlePress(option) {
-    console.tron.log('handlePress');
     player ? handleOptionSelect(option.index): null ;
   }
 
@@ -33,7 +32,7 @@ export default function CardGame({data, handleOptionSelect, player, ...rest}) {
           renderItem={({item}) =>
             <OptionView onPress={() => handlePress(item)}>
               <OptionName>
-                <Text>{item.name}</Text>
+                <Text style={{fontSize:12}}>{item.name.toUpperCase()}</Text>
               </OptionName>
               <OptionValue>
                 <Text>{item.value}</Text>

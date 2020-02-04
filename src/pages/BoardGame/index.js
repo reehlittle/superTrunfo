@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { View, Text, Button, Image } from 'react-native';
 import Modal from 'react-native-modal';
 
+import { endGame, saveAndHome } from '../../store/modules/game/actions';
 import Background from '../../components/Background';
 import {
   Container,
@@ -21,7 +23,8 @@ import {
 import Card from '../../components/Card';
 import data from '../../data/cars';
 
-export default function BoardGame() {
+export default function BoardGame({ navigation }) {
+  const dispatch = useDispatch();
   const [playerDeck, setPlayerDeck] = useState({});
   const [computerDeck, setComputerDeck] = useState({});
   const [playerTurn, setPlayerTurn] = useState(true);
@@ -29,26 +32,37 @@ export default function BoardGame() {
   const [computerActiveCard, setComputerActiveCard] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
 
+  const gameAuthorization = useSelector(state => state.game.authorization);
+  const gameMode = useSelector(state => state.game.onGoing.gameMode);
+  const statePlayerDeck = useSelector(state => state.game.onGoing.playerDeck);
+  const stateComputerDeck = useSelector(state => state.game.onGoing.computerDeck);
+
   useEffect(() => {
-    shuffleAndDeal();
+    statePlayerDeck.length > 0 ? existingGame() : shuffleAndDeal();
   }, []);
 
   useEffect(() => {
-    //make it not call newRound when active cards are not ready.
-    console.tron.log(`PlayerActiveCard: ${playerActiveCard.cardName}`);
-    console.tron.log(`ComputerActiveCard: ${computerActiveCard.cardName}`);
       newRound();
   }, [playerDeck, computerDeck]);
 
   useEffect(() => {
-    console.tron.log(`playerTurn: ${playerTurn}`);
     if(!playerTurn) {
       handleComputerOptionSelect();
     }
   }, [playerTurn]);
 
+  useEffect(() => {
+    if(!gameAuthorization) {
+      navigation.navigate('Dashboard');
+    }
+  }, [gameAuthorization]);
+
+  function existingGame() {
+    setPlayerDeck(statePlayerDeck);
+    setComputerDeck(stateComputerDeck);
+  }
+
   function shuffleAndDeal() {
-    console.tron.log('ShuffleAndDeal');
     var cardArray = data;
     cardArray.sort(() => Math.random() - 0.5);
 
@@ -60,7 +74,6 @@ export default function BoardGame() {
   }
 
   function newRound() {
-    console.tron.log('newRound');
       if(playerDeck.length != 0 && computerDeck.length != 0) {
         if(playerDeck.length && computerDeck.length){
           setPlayerActiveCard(playerDeck[0]);
@@ -76,8 +89,6 @@ export default function BoardGame() {
   }
 
   function handleOptionSelect(option) {
-    console.tron.log('handleOptionSelect');
-    console.tron.log(`Opção: ${option}`);
     newPlayerDeck = playerDeck.filter((card) => {
       return playerActiveCard.cardId != card.cardId;
     });
@@ -99,8 +110,6 @@ export default function BoardGame() {
   }
 
   function handleComputerOptionSelect(){
-    console.tron.log('handleComputerOptionSelect');
-    //get game dificulty
     const dificulty = 'easy';
     let option = {};
     switch(dificulty) {
@@ -114,16 +123,14 @@ export default function BoardGame() {
 
   function finishGame() {
     //show modal with score and button to new game or home
-    console.tron.log('finishGame');
     setModalVisible(true);
   }
 
-  function random() { // min and max included
+  function random() {
     return Math.floor(Math.random() * (2 - 1 +1) + 1) -1;
   }
 
   function newGame(){
-    console.tron.log('NewGame');
     setPlayerDeck({});
     setComputerDeck({});
     setPlayerTurn(true);
@@ -131,6 +138,20 @@ export default function BoardGame() {
     setComputerActiveCard({});
     setModalVisible(false);
     shuffleAndDeal();
+  }
+
+  function handleSaveAndHome() {
+    const onGoingGame =  {
+      gameMode: gameMode,
+      playerDeck: playerDeck,
+      computerDeck: computerDeck,
+      playerTurn: playerTurn
+    }
+    dispatch(saveAndHome(onGoingGame));
+  }
+
+  function handleSurrender() {
+    dispatch(endGame());
   }
 
   return (
@@ -157,7 +178,7 @@ export default function BoardGame() {
           <Options>
             <HomeButton
               press={false}
-              onPress={()=>{}}
+              onPress={handleSaveAndHome}
               prettier={{h:'40px',w:'100px',c:'#ffb300', ts:'12px'}}
             >Home</HomeButton>
             <PassButton
@@ -167,7 +188,7 @@ export default function BoardGame() {
             >Pass</PassButton>
             <SurrenderButton
               press={false}
-              onPress={()=>{}}
+              onPress={handleSurrender}
               prettier={{h:'40px',w:'100px',c:'#ff3437', ts:'12px'}}
             >Surrender</SurrenderButton>
           </Options>

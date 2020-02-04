@@ -29,9 +29,9 @@ export const PlayerCardContainer = styled.View`
 export const Score = styled.View`
   width: 120px;
   height: 200px;
-  margin-left: 10px;
   background: #fff;
-  border-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 
   align-items:center;
   justify-content: space-around;
@@ -58,9 +58,9 @@ export const ScoreSeparator = styled.View`
 export const Options = styled.View`
   width: 120px;
   height: 200px;
-  margin-right: 10px;
   background: #fff;
-  border-radius: 10px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
   align-items: center;
   justify-content: space-around;
 `;

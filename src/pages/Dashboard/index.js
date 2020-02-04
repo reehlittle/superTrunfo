@@ -9,7 +9,6 @@ import Background from '../../components/Background';
 import {
   Container,
   NewGameButton,
-  ConfigButton,
   ModalContainer,
   ModalHeader,
   ModalTitle,
@@ -18,22 +17,35 @@ import {
   Title,
   EasyButton,
   MediumButton,
-  HardButton
+  HardButton,
+  CancelButton,
+  ConfirmButton
 } from './styles';
-import { newGameRequest } from '../../store/modules/game/actions';
+import { newGameRequest, existingGameRequest } from '../../store/modules/game/actions';
 
 export default Dashboard = ({ navigation }) =>{
   const dispatch = useDispatch();
   const gameAuthorization = useSelector(state => state.game.authorization);
+  const gameMode = useSelector(state => state.game.onGoing.gameMode);
 
   const [newGameModal, setNewGameModal] = useState(false);
+  const [existingGameModal, setExistingGameModal] = useState(false);
 
   function openNewGameModal() {
-    setNewGameModal(true);
+    gameMode ? setExistingGameModal(true) : setNewGameModal(true);
   }
 
   function handleNewGame(gameMode) {
     dispatch(newGameRequest(gameMode));
+  }
+
+  function handleExistingGame() {
+    dispatch(existingGameRequest());
+  }
+
+  function handleCancelExistingGame() {
+    setExistingGameModal(false);
+    setNewGameModal(true);
   }
 
   useEffect(() => {
@@ -42,19 +54,9 @@ export default Dashboard = ({ navigation }) =>{
     }
   }, [gameAuthorization]);
 
-  function handleConfiguration(){
-    console.tron.log('handleConfiguration');
-  }
-
   return (
     <Background>
       <Container>
-        <Text>Dashboard</Text>
-        <ConfigButton
-          press={false}
-          onPress={handleConfiguration}
-          prettier={{h: '40px',w: '40px',c: 'blue'}}
-        >C</ConfigButton>
         <NewGameButton
           press={false}
           onPress={openNewGameModal}
@@ -62,11 +64,7 @@ export default Dashboard = ({ navigation }) =>{
         >New Game</NewGameButton>
       </Container>
 
-      <Modal
-        isVisible={newGameModal}
-        animationType={'fade'}
-        transparent={true}
-      >
+      <Modal isVisible={newGameModal} animationType={'fade'} transparent={true}>
         <ModalContainer>
           <ModalHeader>
             <CloseButton title='x' onPress={() => {setNewGameModal(false)}}>
@@ -95,6 +93,33 @@ export default Dashboard = ({ navigation }) =>{
               prettier={{h: '60px',w: '100px',c: '#ff3437'}}
               >Hard
             </HardButton>
+          </ModalBody>
+        </ModalContainer>
+      </Modal>
+
+      <Modal isVisible={existingGameModal} animationType={'fade'} transparent={true}>
+        <ModalContainer>
+          <ModalHeader>
+            <CloseButton title='x' onPress={() => {setExistingGameModal(false)}}>
+              <Icon name="close" size={12} color="#fff" />
+            </CloseButton>
+          </ModalHeader>
+          <ModalTitle>
+            <Title>Resume previous progress?</Title>
+          </ModalTitle>
+          <ModalBody>
+            <CancelButton
+              press={false}
+              onPress={handleCancelExistingGame}
+              prettier={{h: '60px',w: '100px',c: '#ff3437'}}
+              >Cancel
+            </CancelButton>
+            <ConfirmButton
+              press={false}
+              onPress={handleExistingGame}
+              prettier={{h: '60px',w: '100px',c: '#4bbe19'}}
+              >Confirm
+            </ConfirmButton>
           </ModalBody>
         </ModalContainer>
       </Modal>

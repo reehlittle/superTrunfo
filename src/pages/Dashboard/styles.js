@@ -9,8 +9,6 @@ export const Container = styled.View`
 
 export const NewGameButton = styled(Button)``;
 
-export const ConfigButton = styled(Button)``;
-
 export const ModalContainer =  styled.View`
   height: 50%;
   background: #fff;
@@ -59,3 +57,7 @@ export const EasyButton = styled(Button)``;
 export const MediumButton = styled(Button)``;
 
 export const HardButton = styled(Button)``;
+
+export const CancelButton = styled(Button)``;
+
+export const ConfirmButton = styled(Button)``;
