@@ -13,16 +13,16 @@ import {
   OptionValue
 } from './styles';
 
-export default function CardGame({data, handleOptionSelect, player, ...rest}) {
+export default function CardGame({data, handleOptionSelect, player, zoom, ...rest}) {
 
   function handlePress(option) {
     player ? handleOptionSelect(option.index): null ;
   }
 
   return (
-    <Container player={player}>
+    <Container player={player} zoom={zoom}>
       <ProfileContainer>
-        <CardImage source={{uri: 'https://www.razaoautomovel.com/wp-content/uploads/2018/10/Volvo-XC40-34_925x520_acf_cropped.jpg'}}/>
+        <CardImage zoom={zoom} source={{uri: 'https://www.razaoautomovel.com/wp-content/uploads/2018/10/Volvo-XC40-34_925x520_acf_cropped.jpg'}}/>
         <Name>{data.cardName}</Name>
       </ProfileContainer>
       <OptionsContainer>

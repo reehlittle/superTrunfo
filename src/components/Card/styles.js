@@ -1,13 +1,19 @@
 import styled, { css } from 'styled-components/native';
 
-export const Container = styled.View.attrs(props => ({}))`
-  width: 80%;
-  height: 200px;
-  padding: 10px;
+export const Container = styled.View`
   border-radius: 10px;
   background: #fff;
   align-items: center;
   flex-direction: row;
+  ${props => ( props.zoom
+    ? css`
+      height: 280px;
+      width: 95%;
+      padding: 15px;`
+    : css`
+      height: 200px;
+      width: 80%;
+      padding: 10px;`)}
 `;
 
 export const ProfileContainer = styled.View`
@@ -18,9 +24,15 @@ export const ProfileContainer = styled.View`
 `;
 
 export const CardImage = styled.Image`
-  width: 100px;
-  height: 140px;
   border-radius: 10px;
+  ${props => ( props.zoom
+    ? css`
+      height: 80%;
+      width: 80%;`
+    : css`
+      width: 100px;
+      height: 140px;`)}
+
 `;
 
 export const Name = styled.Text`
@@ -44,7 +56,7 @@ export const List= styled.FlatList.attrs({
 `;
 
 export const OptionView = styled.TouchableOpacity`
-  width: 180px;
+  width: 62%;
   flex-direction: row;
   justify-content: space-between;
   align-items:center;

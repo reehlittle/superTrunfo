@@ -30,6 +30,8 @@ export default function BoardGame({ navigation }) {
   const [playerTurn, setPlayerTurn] = useState(true);
   const [playerActiveCard, setPlayerActiveCard] = useState({});
   const [computerActiveCard, setComputerActiveCard] = useState({});
+
+  const [cardZoom, setCardZoom] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   const gameAuthorization = useSelector(state => state.game.authorization);
@@ -154,16 +156,21 @@ export default function BoardGame({ navigation }) {
     dispatch(endGame());
   }
 
+  function handleCardZoom() {
+    setCardZoom(true);
+  }
+
   return (
     <Background>
       <Container>
-        <CompCardContainer>
-          {/* <Card data={computerActiveCard}
+        <CompCardContainer zoom={cardZoom}>
+          <Card data={computerActiveCard}
             handleOptionSelect={handleOptionSelect}
-            player={false}>
-          </Card> */}
+            player={false}
+            zoom={cardZoom}>
+          </Card>
         </CompCardContainer>
-        <OptionsContainer>
+        <OptionsContainer zoom={cardZoom}>
           <Score>
             <ComputerScore>
               <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
@@ -183,7 +190,7 @@ export default function BoardGame({ navigation }) {
             >Home</HomeButton>
             <PassButton
               press={false}
-              onPress={()=>{}}
+              onPress={handleCardZoom}
               prettier={{h:'40px',w:'100px',c:'#09a0f9', ts:'12px'}}
             >Pass</PassButton>
             <SurrenderButton
@@ -193,10 +200,11 @@ export default function BoardGame({ navigation }) {
             >Surrender</SurrenderButton>
           </Options>
         </OptionsContainer>
-        <PlayerCardContainer>
+        <PlayerCardContainer zoom={cardZoom}>
           <Card data={playerActiveCard}
             handleOptionSelect={handleOptionSelect}
-            player={playerTurn}>
+            player={playerTurn}
+            zoom={cardZoom}>
           </Card>
         </PlayerCardContainer>
 
