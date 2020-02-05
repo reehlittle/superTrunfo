@@ -8,13 +8,14 @@ export const Container = styled.SafeAreaView`
 
 export const CompCardContainer = styled.View`
   width: 100%;
-  ${props => ( props.zoom ? css`height: 50%` : css`height: 20%;`)}
+  height: 20%;
+  /* ${props => ( props.zoom ? css`height: 50%` : css`height: 20%;`)} */
+  padding-bottom: 65px;
   align-items: center;
   justify-content: center;
 `;
 
 export const OptionsContainer = styled.View`
-  ${props => ( props.zoom && css`display: none;`)}
   width: 100%;
   height: 50%;
 
@@ -25,12 +26,13 @@ export const OptionsContainer = styled.View`
 
 export const PlayerCardContainer = styled.View`
   width: 100%;
-  ${props => ( props.zoom
+  height: 40%;
+  /* ${props => ( props.zoom
     ? css`
       height: 50% ;
       justify-content: center;`
     : css`
-      height: 40%`)}
+      height: 40%;`)} */
   align-items: center;
 `;
 

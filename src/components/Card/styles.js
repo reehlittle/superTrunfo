@@ -1,19 +1,8 @@
 import styled, { css } from 'styled-components/native';
 
 export const Container = styled.View`
-  border-radius: 10px;
-  background: #fff;
-  align-items: center;
-  flex-direction: row;
-  ${props => ( props.zoom
-    ? css`
-      height: 280px;
-      width: 95%;
-      padding: 15px;`
-    : css`
-      height: 200px;
-      width: 80%;
-      padding: 10px;`)}
+  width: 80%;
+  height: 200px;
 `;
 
 export const ProfileContainer = styled.View`
@@ -24,15 +13,9 @@ export const ProfileContainer = styled.View`
 `;
 
 export const CardImage = styled.Image`
+  width: 100px;
+  height: 140px;
   border-radius: 10px;
-  ${props => ( props.zoom
-    ? css`
-      height: 80%;
-      width: 80%;`
-    : css`
-      width: 100px;
-      height: 140px;`)}
-
 `;
 
 export const Name = styled.Text`
@@ -76,4 +59,9 @@ export const OptionValue = styled.View`
 export const OptionName = styled.View`
   padding: 10px 5px;
   margin-left: 10px;
+`;
+
+export const CardBackground =  styled.Image`
+  width: 100%;
+  height: 100%;
 `;

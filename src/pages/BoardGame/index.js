@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { View, Text, Button, Image } from 'react-native';
+import { View, Text, Button, Image, Animated, Easing } from 'react-native';
 import Modal from 'react-native-modal';
 
 import { endGame, saveAndHome } from '../../store/modules/game/actions';
@@ -31,13 +31,18 @@ export default function BoardGame({ navigation }) {
   const [playerActiveCard, setPlayerActiveCard] = useState({});
   const [computerActiveCard, setComputerActiveCard] = useState({});
 
-  const [cardZoom, setCardZoom] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
   const gameAuthorization = useSelector(state => state.game.authorization);
   const gameMode = useSelector(state => state.game.onGoing.gameMode);
   const statePlayerDeck = useSelector(state => state.game.onGoing.playerDeck);
   const stateComputerDeck = useSelector(state => state.game.onGoing.computerDeck);
+
+  let scaleValue = new Animated.Value(0);
+  const cardScale = scaleValue.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 1.1, 1.2]
+  });
 
   useEffect(() => {
     statePlayerDeck.length > 0 ? existingGame() : shuffleAndDeal();
@@ -157,31 +162,43 @@ export default function BoardGame({ navigation }) {
   }
 
   function handleCardZoom() {
-    setCardZoom(true);
+      scaleValue.setValue(0);
+      Animated.timing(scaleValue, {
+        toValue: 1,
+        duration: 250,
+        easing: Easing.linear,
+        useNativeDriver: true
+      }).start();
+
+    //setCardZoom(true);
   }
+
+  let transformStyle = { ...{}, transform: [{ scale: cardScale }] };
 
   return (
     <Background>
       <Container>
-        <CompCardContainer zoom={cardZoom}>
+        <CompCardContainer>
           <Card data={computerActiveCard}
             handleOptionSelect={handleOptionSelect}
-            player={false}
-            zoom={cardZoom}>
+            open={false}
+          >
           </Card>
         </CompCardContainer>
-        <OptionsContainer zoom={cardZoom}>
+        <OptionsContainer>
+        <Animated.View style={transformStyle}>
           <Score>
-            <ComputerScore>
-              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
-              <ScoreText>{computerDeck.length}</ScoreText>
-            </ComputerScore>
-            <ScoreSeparator />
-            <PlayerScore>
-              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
-              <ScoreText>{playerDeck.length}</ScoreText>
-            </PlayerScore>
-          </Score>
+              <ComputerScore>
+                <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
+                <ScoreText>{computerDeck.length}</ScoreText>
+              </ComputerScore>
+              <ScoreSeparator />
+              <PlayerScore>
+                <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
+                <ScoreText>{playerDeck.length}</ScoreText>
+              </PlayerScore>
+            </Score>
+        </Animated.View>
           <Options>
             <HomeButton
               press={false}
@@ -200,13 +217,18 @@ export default function BoardGame({ navigation }) {
             >Surrender</SurrenderButton>
           </Options>
         </OptionsContainer>
-        <PlayerCardContainer zoom={cardZoom}>
-          <Card data={playerActiveCard}
-            handleOptionSelect={handleOptionSelect}
-            player={playerTurn}
-            zoom={cardZoom}>
-          </Card>
-        </PlayerCardContainer>
+
+        <Animated.View style={transformStyle}>
+          <PlayerCardContainer>
+            <Card data={playerActiveCard}
+              handleOptionSelect={handleOptionSelect}
+              open={true}
+            >
+            </Card>
+          </PlayerCardContainer>
+        </Animated.View>
+
+
 
         <Modal isVisible={modalVisible}>
             <View style={{ flex: 1 }}>
