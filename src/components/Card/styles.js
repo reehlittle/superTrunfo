@@ -45,6 +45,16 @@ export const OptionView = styled.TouchableOpacity`
   align-items:center;
   background: #EAEBED;
   border-radius: 30px;
+  ${
+      props => (
+        props.selected == 'winner' 
+        && css`background: rgba(105, 201, 64, 0.67)`
+  )}
+  ${
+      props => (
+        props.selected == 'loser'
+        && css`background: rgba(234, 82, 74, 0.84)`  
+  )}
 `;
 
 export const OptionValue = styled.View`

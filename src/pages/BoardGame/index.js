@@ -103,17 +103,61 @@ export default function BoardGame({ navigation }) {
       return computerActiveCard.cardId != card.cardId;
     });
     if(playerActiveCard.cardOptions[option].value >= computerActiveCard.cardOptions[option].value) {
+      var SelectedComputerCard = {
+        selected: {
+          option,
+          result: 'loser'
+        },
+        ... computerActiveCard
+      };
+      var SelectedPlayerActiveCard = {
+        selected: {
+          option,
+          result: 'winner'
+        },
+        ... playerActiveCard
+      };
+
+      setPlayerActiveCard(SelectedPlayerActiveCard);
+      setComputerActiveCard(SelectedComputerCard);
+
+      handleCardZoom();
+      this.timeoutHandle = setTimeout(()=>{
+        handleCardZoomOut();
+      }, 2000);
       newPlayerDeck.push(playerActiveCard);
       newPlayerDeck.push(computerActiveCard);
       setPlayerTurn(true);
     }
     else {
-      newComputerDeck.push(computerActiveCard);
-      newComputerDeck.push(playerActiveCard);
-      setPlayerTurn(false);
+      var SelectedPlayerActiveCard = playerActiveCard;
+      var SelectedComputerCard = computerActiveCard;
+      SelectedComputerCard.selected = {
+        option,
+        result: 'winner'
+      };
+      SelectedPlayerActiveCard.selected = {
+        option,
+        result: 'loser'
+      };
+
+      setPlayerActiveCard(SelectedPlayerActiveCard);
+      setComputerActiveCard(SelectedComputerCard);
+
+      handleCardZoom();
+      this.timeoutHandle = setTimeout(()=>{
+        handleCardZoomOut();
+      }, 2000);
+      
+      // newComputerDeck.push(computerActiveCard);
+      // newComputerDeck.push(playerActiveCard);
+      //setPlayerTurn(false);
     }
-    setPlayerDeck(newPlayerDeck);
-    setComputerDeck(newComputerDeck);
+    this.timeoutHandle = setTimeout(()=>{
+      setPlayerDeck(newPlayerDeck);
+      setComputerDeck(newComputerDeck);
+    }, 2000);
+
   }
 
   function handleComputerOptionSelect(){
@@ -169,8 +213,15 @@ export default function BoardGame({ navigation }) {
         easing: Easing.linear,
         useNativeDriver: true
       }).start();
+  }
 
-    //setCardZoom(true);
+  function handleCardZoomOut(){
+    Animated.timing(scaleValue, {
+      toValue: 0,
+      duration: 250,
+      easing: Easing.linear,
+      useNativeDriver: true
+    }).start();
   }
 
   let transformStyle = { ...{}, transform: [{ scale: cardScale }] };
@@ -178,27 +229,27 @@ export default function BoardGame({ navigation }) {
   return (
     <Background>
       <Container>
-        <CompCardContainer>
-          <Card data={computerActiveCard}
-            handleOptionSelect={handleOptionSelect}
-            open={false}
-          >
-          </Card>
-        </CompCardContainer>
-        <OptionsContainer>
         <Animated.View style={transformStyle}>
-          <Score>
-              <ComputerScore>
-                <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
-                <ScoreText>{computerDeck.length}</ScoreText>
-              </ComputerScore>
-              <ScoreSeparator />
-              <PlayerScore>
-                <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
-                <ScoreText>{playerDeck.length}</ScoreText>
-              </PlayerScore>
-            </Score>
+          <CompCardContainer>
+            <Card data={computerActiveCard}
+              handleOptionSelect={handleOptionSelect}
+              open={false}
+            >
+            </Card>
+          </CompCardContainer>
         </Animated.View>
+        <OptionsContainer>
+          <Score>
+            <ComputerScore>
+              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
+              <ScoreText>{computerDeck.length}</ScoreText>
+            </ComputerScore>
+            <ScoreSeparator />
+            <PlayerScore>
+              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
+              <ScoreText>{playerDeck.length}</ScoreText>
+            </PlayerScore>
+          </Score>
           <Options>
             <HomeButton
               press={false}

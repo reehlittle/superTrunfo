@@ -15,66 +15,29 @@ import {
 
 export default function CardGame({data, handleOptionSelect, open, ...rest}) {
 
-  let animatedValue = new Animated.Value(0);
-  const frontInterpolate = animatedValue.interpolate({
-    inputRange: [0, 180],
-    outputRange: ['0deg', '180deg'],
-  });
-  const backInterpolate = animatedValue.interpolate({
-    inputRange: [0, 180],
-    outputRange: ['180deg', '360deg']
-  });
-  const frontOpacity = animatedValue.interpolate({
-    inputRange: [89, 90],
-    outputRange: [1, 0]
-  });
-  const backOpacity = animatedValue.interpolate({
-    inputRange: [89, 90],
-    outputRange: [0, 1]
-  });
-  const frontAnimatedStyle = {
-    transform: [
-      { rotateY: frontInterpolate }
-    ]
-  };
-  const backAnimatedStyle = {
-    transform: [
-      { rotateY: backInterpolate }
-    ]
-  };
-
   function handlePress(option) {
-    player ? handleOptionSelect(option.index): null ;
+    handleOptionSelect(option.index);
   }
 
   useEffect(() => {
     console.tron.log(`Open: ${open}`);
   }, []);
 
-  useEffect(( )=> {
-    open && flipCard()
-  }, [open]);
+  useEffect(()=>{
 
-  function flipCard() {
-    // if (angle >= 90) {
-      // Animated.spring(animatedValue,{
-      //   toValue: 0,
-      //   friction: 8,
-      //   tension: 10
-      // }).start();
-    // } else {
-      Animated.spring(animatedValue,{
-        toValue: 180,
-        friction: 8,
-        tension: 10
-      }).start();
-    // }
+    console.tron.log('useEffect Card');
+  },[data]);
+
+  function handleSelected(index) {
+    console.tron.log(data);
+    data.selected.option === index ? data.selected.result : 'none';
   }
 
   return (
     <Container >
-      <View>
-        <Animated.View style={[styles.flipCard, styles.flipCardBack, backAnimatedStyle, {opacity: backOpacity}]}>
+      {
+        open ?
+        <View style={ styles.flipCard }>
           <ProfileContainer>
             <CardImage source={{uri: 'https:www.razaoautomovel.com/wp-content/uploads/2018/10/Volvo-XC40-34_925x520_acf_cropped.jpg'}}/>
             <Name>{data.cardName}</Name>
@@ -84,7 +47,7 @@ export default function CardGame({data, handleOptionSelect, open, ...rest}) {
               data={data.cardOptions}
               keyExtractor={item => String(item.name)}
               renderItem={({item}) =>
-                <OptionView onPress={() => handlePress(item)}>
+                <OptionView onPress={() => handlePress(item)} selected={() => handleSelected(item.index)}>
                   <OptionName>
                     <Text style={{fontSize:12}}>{item.name.toUpperCase()}</Text>
                   </OptionName>
@@ -94,11 +57,12 @@ export default function CardGame({data, handleOptionSelect, open, ...rest}) {
                 </OptionView>
             }/>
           </OptionsContainer>
-        </Animated.View>
-        <Animated.View style={[styles.flipCard, frontAnimatedStyle, {opacity: frontOpacity}]}>
+        </View>
+        :
+        <View style={styles.flipCardBack}>
           <CardBackground source={require('../../assets/card-background.png')}/>
-        </Animated.View>
-      </View>
+        </View>
+      }
     </Container>
   );
 }
@@ -118,5 +82,7 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     position: "absolute",
+    padding: 10,
+    borderRadius: 10,
   },
 });
