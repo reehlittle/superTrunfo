@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Text } from 'react-native';
 
 import { Container, CardContainer } from './styles';
@@ -14,25 +15,33 @@ export default function BoardGame() {
   const [computerDeck, setComputerDeck] = useState([]);
   const [playerCard, setPlayerCard] = useState([]);
   const [computerCard, setComputerCard] = useState([]);
+  const [computerPlay, setComputerPlay] = useState(false);
+
+  const gameMode = useSelector(state => state.game.onGoing.gameMode);
 
   useEffect(() => {
     shuffleAndDeal();
   }, []);
 
   useEffect(() => {
-    if( playerDeck.length != 0 && computerDeck.length != 0) {
+    if( playerDeck.length != 0 && computerDeck.length != 0 && 
+      ( playerDeck.length + computerDeck.length == deck.length )) {
       newTurn();
     }
-  }, [playerDeck, computerDeck]);
+    if( (playerDeck.length == 0 && computerDeck.length > 0) ||
+      (playerDeck.length > 0 && computerDeck.length == 0)) {
+      endGame();
+    }
+  }, [computerDeck]);
 
   useEffect(() => {
-    if( computerTurn == true) {
-      console.tron.log('Jogue Computador, Jogue !');
+    if(computerPlay == true) {
       computerMove();
     }
-  }, [computerTurn])
+  }, [computerPlay])
 
   function shuffleAndDeal() {
+    console.tron.log('ShuffleAndDeal');
     var data = require('../../data/cars');
     data = data.default;
     data.sort(() => Math.random() - 0.5);
@@ -46,19 +55,23 @@ export default function BoardGame() {
   }
 
   function newTurn() {
-    if(playerDeck.length && computerDeck.length){
-      setPlayerCard({ ...playerDeck[0]});
-      setComputerCard({ ...computerDeck[0]});
-    }
-    else {
-      endGame();
-    }
+    console.tron.log('newTurn');
+    setPlayerCard({ ...playerDeck[0]});
+    setComputerCard({ ...computerDeck[0]});
+
+    computerTurn === true ? setComputerPlay(true) : setComputerPlay(false);
   }
 
   function handleOptionSelect(option) {
-    console.tron.log(option);
+    console.tron.log(`handleOptionSelect: ${option}`);
+    console.tron.log(`playerDeck.length ${playerDeck.length}`);
+    console.tron.log(`computerDeck.length ${computerDeck.length}`);
+
+    // console.tron.log(playerDeck);
+    // console.tron.log(computerDeck);
     //does not let the player select another option
     setPlayerTurn(false);
+    setComputerPlay(false);
 
     //faz uma copia da carta ativa, para effect perceber mudança
     var SelectedPlayerCard = { ...playerCard } ;
@@ -66,12 +79,10 @@ export default function BoardGame() {
 
     //verifica qual carta ativa é maior
     if(playerCard.cardOptions[option].value >= computerCard.cardOptions[option].value) {
-      //coloca cores na carta ativa
       SelectedPlayerCard.cardOptions[option].selected = 'winner';
       SelectedComputerCard.cardOptions[option].selected = 'loser';
     }
     else {
-      //coloca cores na carta ativa
       SelectedPlayerCard.cardOptions[option].selected = 'loser';
       SelectedComputerCard.cardOptions[option].selected = 'winner';
     }
@@ -80,11 +91,8 @@ export default function BoardGame() {
     setPlayerCard(SelectedPlayerCard);
     setComputerCard(SelectedComputerCard);
     setOpenComputerCard(true);
+    setComputerTurn(false);
 
-    //agora faça a animação
-    //tira os valores dos selects
-    //coloqe as cartas no deck vencedor
-    //chame uma nova rodada
     var timeoutHandle = setTimeout(()=>{
       SelectedPlayerCard.cardOptions[option].selected = 'none';
       SelectedComputerCard.cardOptions[option].selected = 'none';
@@ -99,42 +107,58 @@ export default function BoardGame() {
         return computerCard.cardId != card.cardId;
       });
 
+      console.tron.log('Com cartas ativas retiradas');
+      console.tron.log(newPlayerDeck);
+      console.tron.log(newComputerDeck);
     if(playerCard.cardOptions[option].value >= computerCard.cardOptions[option].value) {
       //Coloca ambas as cartas ativas no deck de quem ganhou
       newPlayerDeck.push(playerCard);
       newPlayerDeck.push(computerCard);
+
+      console.tron.log('Depois do push');
+      console.tron.log(newPlayerDeck);
+      console.tron.log(newComputerDeck);
       setPlayerTurn(true);
+      setComputerTurn(false);
     }
     else {
       newComputerDeck.push(computerCard);
       newComputerDeck.push(playerCard);
+      console.tron.log('Depois do push');
+      console.tron.log(newPlayerDeck);
+      console.tron.log(newComputerDeck);
       setComputerTurn(true);
     }
       setPlayerDeck(newPlayerDeck);
       setComputerDeck(newComputerDeck);
       setOpenComputerCard(false);
     }, 2000);
-
-
-    console.tron.log(playerDeck);
-    console.tron.log(computerDeck);
-    console.tron.log(deck);
   }
 
   function computerMove() {
-    // const dificulty = 'easy';
-    // let option = {};
-    // switch(dificulty) {
-    //   case 'easy':
-    //     option = random();
-    //   case 'hard' :
-    //     option = random();
-    // };
-    // handleOptionSelect(option);
+    console.tron.log('computerMove');
+
+    var timeoutHandle = setTimeout(()=>{
+      let option = {};
+      switch(gameMode) {
+        case 'easy':
+          option = random();
+        case 'medium' :
+            option = random();
+        case 'hard' :
+          option = random();
+      };
+      console.tron.log(`Jogue Computador: ${option}`);
+      handleOptionSelect(option);
+    }, 2000);
   }
 
   function endGame() {
     console.tron.log("End Game");
+  }
+
+  function random() {
+    return Math.floor(Math.random() * (2 - 1 +1) + 1) -1;
   }
 
   return (
