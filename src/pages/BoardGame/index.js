@@ -1,292 +1,163 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { View, Text, Button, Image, Animated, Easing } from 'react-native';
-import Modal from 'react-native-modal';
+import { Text } from 'react-native';
 
-import { endGame, saveAndHome } from '../../store/modules/game/actions';
+import { Container, CardContainer } from './styles';
 import Background from '../../components/Background';
-import {
-  Container,
-  CompCardContainer,
-  OptionsContainer,
-  PlayerCardContainer,
-  Score,
-  ScoreText,
-  ScoreSeparator,
-  ComputerScore,
-  PlayerScore,
-  Options,
-  HomeButton,
-  PassButton,
-  SurrenderButton
-} from './styles';
 import Card from '../../components/Card';
-import data from '../../data/cars';
 
-export default function BoardGame({ navigation }) {
-  const dispatch = useDispatch();
-  const [playerDeck, setPlayerDeck] = useState({});
-  const [computerDeck, setComputerDeck] = useState({});
+export default function BoardGame() {
+  const [deck, setDeck] = useState([]);
   const [playerTurn, setPlayerTurn] = useState(true);
-  const [playerActiveCard, setPlayerActiveCard] = useState({});
-  const [computerActiveCard, setComputerActiveCard] = useState({});
-
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const gameAuthorization = useSelector(state => state.game.authorization);
-  const gameMode = useSelector(state => state.game.onGoing.gameMode);
-  const statePlayerDeck = useSelector(state => state.game.onGoing.playerDeck);
-  const stateComputerDeck = useSelector(state => state.game.onGoing.computerDeck);
-
-  let scaleValue = new Animated.Value(0);
-  const cardScale = scaleValue.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [1, 1.1, 1.2]
-  });
+  const [computerTurn, setComputerTurn] = useState(false);
+  const [openComputerCard, setOpenComputerCard] = useState(false);
+  const [playerDeck, setPlayerDeck] = useState([]);
+  const [computerDeck, setComputerDeck] = useState([]);
+  const [playerCard, setPlayerCard] = useState([]);
+  const [computerCard, setComputerCard] = useState([]);
 
   useEffect(() => {
-    statePlayerDeck.length > 0 ? existingGame() : shuffleAndDeal();
+    shuffleAndDeal();
   }, []);
 
   useEffect(() => {
-      newRound();
+    if( playerDeck.length != 0 && computerDeck.length != 0) {
+      newTurn();
+    }
   }, [playerDeck, computerDeck]);
 
   useEffect(() => {
-    if(!playerTurn) {
-      handleComputerOptionSelect();
+    if( computerTurn == true) {
+      console.tron.log('Jogue Computador, Jogue !');
+      computerMove();
     }
-  }, [playerTurn]);
-
-  useEffect(() => {
-    if(!gameAuthorization) {
-      navigation.navigate('Dashboard');
-    }
-  }, [gameAuthorization]);
-
-  function existingGame() {
-    setPlayerDeck(statePlayerDeck);
-    setComputerDeck(stateComputerDeck);
-  }
+  }, [computerTurn])
 
   function shuffleAndDeal() {
-    var cardArray = data;
-    cardArray.sort(() => Math.random() - 0.5);
+    var data = require('../../data/cars');
+    data = data.default;
+    data.sort(() => Math.random() - 0.5);
 
-    const pd = Object.entries(cardArray).slice(0,16).map(entry => entry[1]);
-    const cd = Object.entries(cardArray).slice(16,32).map(entry => entry[1]);
+    const pd = Object.entries(data).slice(0,16).map(entry => entry[1]);
+    const cd = Object.entries(data).slice(16,32).map(entry => entry[1]);
 
+    setDeck(data);
     setPlayerDeck(pd);
     setComputerDeck(cd);
   }
 
-  function newRound() {
-      if(playerDeck.length != 0 && computerDeck.length != 0) {
-        if(playerDeck.length && computerDeck.length){
-          setPlayerActiveCard(playerDeck[0]);
-          setComputerActiveCard(computerDeck[0]);
-          if(!playerTurn){
-            handleComputerOptionSelect();
-          }
-        }
-      }
-      else {
-        finishGame();
-      }
+  function newTurn() {
+    if(playerDeck.length && computerDeck.length){
+      setPlayerCard({ ...playerDeck[0]});
+      setComputerCard({ ...computerDeck[0]});
+    }
+    else {
+      endGame();
+    }
   }
 
   function handleOptionSelect(option) {
-    newPlayerDeck = playerDeck.filter((card) => {
-      return playerActiveCard.cardId != card.cardId;
-    });
-    newComputerDeck = computerDeck.filter((card) => {
-      return computerActiveCard.cardId != card.cardId;
-    });
-    if(playerActiveCard.cardOptions[option].value >= computerActiveCard.cardOptions[option].value) {
-      var SelectedComputerCard = {
-        selected: {
-          option,
-          result: 'loser'
-        },
-        ... computerActiveCard
-      };
-      var SelectedPlayerActiveCard = {
-        selected: {
-          option,
-          result: 'winner'
-        },
-        ... playerActiveCard
-      };
+    console.tron.log(option);
+    //does not let the player select another option
+    setPlayerTurn(false);
 
-      setPlayerActiveCard(SelectedPlayerActiveCard);
-      setComputerActiveCard(SelectedComputerCard);
+    //faz uma copia da carta ativa, para effect perceber mudança
+    var SelectedPlayerCard = { ...playerCard } ;
+    var SelectedComputerCard = { ...computerCard };
 
-      handleCardZoom();
-      this.timeoutHandle = setTimeout(()=>{
-        handleCardZoomOut();
-      }, 2000);
-      newPlayerDeck.push(playerActiveCard);
-      newPlayerDeck.push(computerActiveCard);
+    //verifica qual carta ativa é maior
+    if(playerCard.cardOptions[option].value >= computerCard.cardOptions[option].value) {
+      //coloca cores na carta ativa
+      SelectedPlayerCard.cardOptions[option].selected = 'winner';
+      SelectedComputerCard.cardOptions[option].selected = 'loser';
+    }
+    else {
+      //coloca cores na carta ativa
+      SelectedPlayerCard.cardOptions[option].selected = 'loser';
+      SelectedComputerCard.cardOptions[option].selected = 'winner';
+    }
+
+    //seta carta ativa para o componente carta poder fazer alterações
+    setPlayerCard(SelectedPlayerCard);
+    setComputerCard(SelectedComputerCard);
+    setOpenComputerCard(true);
+
+    //agora faça a animação
+    //tira os valores dos selects
+    //coloqe as cartas no deck vencedor
+    //chame uma nova rodada
+    var timeoutHandle = setTimeout(()=>{
+      SelectedPlayerCard.cardOptions[option].selected = 'none';
+      SelectedComputerCard.cardOptions[option].selected = 'none';
+      setPlayerCard(SelectedPlayerCard);
+      setComputerCard(SelectedComputerCard);
+
+      //retira a carta ativa de ambos os decks
+      var newPlayerDeck = playerDeck.filter((card) => {
+        return playerCard.cardId != card.cardId;
+      });
+      var newComputerDeck = computerDeck.filter((card) => {
+        return computerCard.cardId != card.cardId;
+      });
+
+    if(playerCard.cardOptions[option].value >= computerCard.cardOptions[option].value) {
+      //Coloca ambas as cartas ativas no deck de quem ganhou
+      newPlayerDeck.push(playerCard);
+      newPlayerDeck.push(computerCard);
       setPlayerTurn(true);
     }
     else {
-      var SelectedPlayerActiveCard = playerActiveCard;
-      var SelectedComputerCard = computerActiveCard;
-      SelectedComputerCard.selected = {
-        option,
-        result: 'winner'
-      };
-      SelectedPlayerActiveCard.selected = {
-        option,
-        result: 'loser'
-      };
-
-      setPlayerActiveCard(SelectedPlayerActiveCard);
-      setComputerActiveCard(SelectedComputerCard);
-
-      handleCardZoom();
-      this.timeoutHandle = setTimeout(()=>{
-        handleCardZoomOut();
-      }, 2000);
-      
-      // newComputerDeck.push(computerActiveCard);
-      // newComputerDeck.push(playerActiveCard);
-      //setPlayerTurn(false);
+      newComputerDeck.push(computerCard);
+      newComputerDeck.push(playerCard);
+      setComputerTurn(true);
     }
-    this.timeoutHandle = setTimeout(()=>{
       setPlayerDeck(newPlayerDeck);
       setComputerDeck(newComputerDeck);
+      setOpenComputerCard(false);
     }, 2000);
 
+
+    console.tron.log(playerDeck);
+    console.tron.log(computerDeck);
+    console.tron.log(deck);
   }
 
-  function handleComputerOptionSelect(){
-    const dificulty = 'easy';
-    let option = {};
-    switch(dificulty) {
-      case 'easy':
-        option = random();
-      case 'hard' :
-        option = random();
-    };
-    handleOptionSelect(option);
+  function computerMove() {
+    // const dificulty = 'easy';
+    // let option = {};
+    // switch(dificulty) {
+    //   case 'easy':
+    //     option = random();
+    //   case 'hard' :
+    //     option = random();
+    // };
+    // handleOptionSelect(option);
   }
 
-  function finishGame() {
-    //show modal with score and button to new game or home
-    setModalVisible(true);
+  function endGame() {
+    console.tron.log("End Game");
   }
-
-  function random() {
-    return Math.floor(Math.random() * (2 - 1 +1) + 1) -1;
-  }
-
-  function newGame(){
-    setPlayerDeck({});
-    setComputerDeck({});
-    setPlayerTurn(true);
-    setPlayerActiveCard({});
-    setComputerActiveCard({});
-    setModalVisible(false);
-    shuffleAndDeal();
-  }
-
-  function handleSaveAndHome() {
-    const onGoingGame =  {
-      gameMode: gameMode,
-      playerDeck: playerDeck,
-      computerDeck: computerDeck,
-      playerTurn: playerTurn
-    }
-    dispatch(saveAndHome(onGoingGame));
-  }
-
-  function handleSurrender() {
-    dispatch(endGame());
-  }
-
-  function handleCardZoom() {
-      scaleValue.setValue(0);
-      Animated.timing(scaleValue, {
-        toValue: 1,
-        duration: 250,
-        easing: Easing.linear,
-        useNativeDriver: true
-      }).start();
-  }
-
-  function handleCardZoomOut(){
-    Animated.timing(scaleValue, {
-      toValue: 0,
-      duration: 250,
-      easing: Easing.linear,
-      useNativeDriver: true
-    }).start();
-  }
-
-  let transformStyle = { ...{}, transform: [{ scale: cardScale }] };
 
   return (
     <Background>
       <Container>
-        <Animated.View style={transformStyle}>
-          <CompCardContainer>
-            <Card data={computerActiveCard}
-              handleOptionSelect={handleOptionSelect}
-              open={false}
-            >
-            </Card>
-          </CompCardContainer>
-        </Animated.View>
-        <OptionsContainer>
-          <Score>
-            <ComputerScore>
-              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
-              <ScoreText>{computerDeck.length}</ScoreText>
-            </ComputerScore>
-            <ScoreSeparator />
-            <PlayerScore>
-              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
-              <ScoreText>{playerDeck.length}</ScoreText>
-            </PlayerScore>
-          </Score>
-          <Options>
-            <HomeButton
-              press={false}
-              onPress={handleSaveAndHome}
-              prettier={{h:'40px',w:'100px',c:'#ffb300', ts:'12px'}}
-            >Home</HomeButton>
-            <PassButton
-              press={false}
-              onPress={handleCardZoom}
-              prettier={{h:'40px',w:'100px',c:'#09a0f9', ts:'12px'}}
-            >Pass</PassButton>
-            <SurrenderButton
-              press={false}
-              onPress={handleSurrender}
-              prettier={{h:'40px',w:'100px',c:'#ff3437', ts:'12px'}}
-            >Surrender</SurrenderButton>
-          </Options>
-        </OptionsContainer>
-
-        <Animated.View style={transformStyle}>
-          <PlayerCardContainer>
-            <Card data={playerActiveCard}
-              handleOptionSelect={handleOptionSelect}
-              open={true}
-            >
-            </Card>
-          </PlayerCardContainer>
-        </Animated.View>
-
-
-
-        <Modal isVisible={modalVisible}>
-            <View style={{ flex: 1 }}>
-              <Text>Game Over!</Text>
-              <Button title="New Game" onPress={newGame} />
-            </View>
-          </Modal>
+        <CardContainer>
+          <Card
+            gamer="computer"
+            data={computerCard}
+            open={openComputerCard}
+            handleOptionSelect={handleOptionSelect}
+            playerTurn={false}
+          />
+        </CardContainer>
+        <CardContainer>
+          <Card
+            gamer="player"
+            data={playerCard}
+            open={true}
+            handleOptionSelect={handleOptionSelect}
+            playerTurn={playerTurn}
+          />
+        </CardContainer>
       </Container>
     </Background>
   );

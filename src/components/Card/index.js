@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Text, StyleSheet, Animated, View } from 'react-native';
 import {
   Container,
-  ProfileContainer,
+  CardFront,
+  CardBack,
+  CardDescription,
   CardImage,
-  Name,
-  OptionsContainer,
+  CardName,
   List,
   OptionView,
   OptionName,
@@ -13,76 +14,40 @@ import {
   CardBackground
 } from './styles';
 
-export default function CardGame({data, handleOptionSelect, open, ...rest}) {
+export default function CardGame({gamer, data, open, handleOptionSelect, playerTurn, ...rest}) {
 
   function handlePress(option) {
-    handleOptionSelect(option.index);
-  }
-
-  useEffect(() => {
-    console.tron.log(`Open: ${open}`);
-  }, []);
-
-  useEffect(()=>{
-
-    console.tron.log('useEffect Card');
-  },[data]);
-
-  function handleSelected(index) {
-    console.tron.log(data);
-    data.selected.option === index ? data.selected.result : 'none';
+    playerTurn && handleOptionSelect(option.index);
   }
 
   return (
     <Container >
       {
         open ?
-        <View style={ styles.flipCard }>
-          <ProfileContainer>
+        <CardFront>
+          <CardDescription>
             <CardImage source={{uri: 'https:www.razaoautomovel.com/wp-content/uploads/2018/10/Volvo-XC40-34_925x520_acf_cropped.jpg'}}/>
-            <Name>{data.cardName}</Name>
-          </ProfileContainer>
-          <OptionsContainer>
-            <List
-              data={data.cardOptions}
-              keyExtractor={item => String(item.name)}
-              renderItem={({item}) =>
-                <OptionView onPress={() => handlePress(item)} selected={() => handleSelected(item.index)}>
-                  <OptionName>
-                    <Text style={{fontSize:12}}>{item.name.toUpperCase()}</Text>
-                  </OptionName>
-                  <OptionValue>
-                    <Text>{item.value}</Text>
-                  </OptionValue>
-                </OptionView>
-            }/>
-          </OptionsContainer>
-        </View>
+            <CardName>{data.cardName}</CardName>
+          </CardDescription>
+          <List
+            data={data.cardOptions}
+            keyExtractor={item => String(item.name)}
+            renderItem={({item}) =>
+              <OptionView onPress={() => handlePress(item)} selected={item.selected}>
+                <OptionName>
+                  <Text style={{fontSize:12}}>{item.name.toUpperCase()}</Text>
+                </OptionName>
+                <OptionValue>
+                  <Text>{item.value}</Text>
+                </OptionValue>
+              </OptionView>
+          }/>
+        </CardFront>
         :
-        <View style={styles.flipCardBack}>
+        <CardBack>
           <CardBackground source={require('../../assets/card-background.png')}/>
-        </View>
+        </CardBack>
       }
     </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  flipCard: {
-    height: '100%',
-    width: '100%',
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    flexDirection: 'row',
-    backfaceVisibility: 'hidden',
-  },
-  flipCardBack: {
-    height: '100%',
-    width: '100%',
-    position: "absolute",
-    padding: 10,
-    borderRadius: 10,
-  },
-});

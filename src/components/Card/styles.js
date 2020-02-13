@@ -5,7 +5,27 @@ export const Container = styled.View`
   height: 200px;
 `;
 
-export const ProfileContainer = styled.View`
+export const CardFront = styled.View`
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fff;
+  align-items: center;
+  flex-direction: row;
+`;
+
+export const CardBack = styled.View`
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fff;
+  align-items: center;
+  flex-direction: row;
+`;
+
+export const CardDescription = styled.View`
   width: 40%;
   height: 100%;
   align-items: center;
@@ -18,7 +38,7 @@ export const CardImage = styled.Image`
   border-radius: 10px;
 `;
 
-export const Name = styled.Text`
+export const CardName = styled.Text`
   color: #ffb300;
   text-align: center;
   line-height: 35px;
@@ -47,13 +67,13 @@ export const OptionView = styled.TouchableOpacity`
   border-radius: 30px;
   ${
       props => (
-        props.selected == 'winner' 
+        props.selected == 'winner'
         && css`background: rgba(105, 201, 64, 0.67)`
   )}
   ${
       props => (
         props.selected == 'loser'
-        && css`background: rgba(234, 82, 74, 0.84)`  
+        && css`background: rgba(234, 82, 74, 0.84)`
   )}
 `;
 
@@ -74,4 +94,5 @@ export const OptionName = styled.View`
 export const CardBackground =  styled.Image`
   width: 100%;
   height: 100%;
+  border-radius: 8px;
 `;

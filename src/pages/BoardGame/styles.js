@@ -4,15 +4,13 @@ import Button from '../../components/Button';
 
 export const Container = styled.SafeAreaView`
   flex: 1;
+  justify-content: space-between
 `;
 
-export const CompCardContainer = styled.View`
+export const CardContainer = styled.View`
   width: 100%;
-  height: 20%;
-  /* ${props => ( props.zoom ? css`height: 50%` : css`height: 20%;`)} */
-  padding-bottom: 65px;
+  padding: 10px 0;
   align-items: center;
-  justify-content: center;
 `;
 
 export const OptionsContainer = styled.View`
@@ -21,18 +19,6 @@ export const OptionsContainer = styled.View`
 
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
-`;
-
-export const PlayerCardContainer = styled.View`
-  width: 100%;
-  height: 40%;
-  /* ${props => ( props.zoom
-    ? css`
-      height: 50% ;
-      justify-content: center;`
-    : css`
-      height: 40%;`)} */
   align-items: center;
 `;
 
