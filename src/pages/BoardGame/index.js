@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Text } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { Image, View, Text, Button } from 'react-native';
+import Modal from 'react-native-modal';
 
-import { Container, CardContainer } from './styles';
+import {
+  Container,
+  CardContainer,
+  OptionsContainer,
+  Score,
+  ScoreText,
+  ScoreSeparator,
+  ComputerScore,
+  PlayerScore,
+  Options,
+  HomeButton,
+  PassButton,
+  SurrenderButton
+} from './styles';
 import Background from '../../components/Background';
 import Card from '../../components/Card';
 
-export default function BoardGame() {
+import { endGame, saveAndHome } from '../../store/modules/game/actions';
+
+export default function BoardGame({ navigation }) {
   const [deck, setDeck] = useState([]);
   const [playerTurn, setPlayerTurn] = useState(true);
   const [computerTurn, setComputerTurn] = useState(false);
@@ -16,21 +32,31 @@ export default function BoardGame() {
   const [playerCard, setPlayerCard] = useState([]);
   const [computerCard, setComputerCard] = useState([]);
   const [computerPlay, setComputerPlay] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
+  const dispatch = useDispatch();
   const gameMode = useSelector(state => state.game.onGoing.gameMode);
+  const gameAuthorization = useSelector(state => state.game.authorization);
+  const statePlayerDeck = useSelector(state => state.game.onGoing.playerDeck);
+  const stateComputerDeck = useSelector(state => state.game.onGoing.computerDeck);
 
   useEffect(() => {
-    shuffleAndDeal();
+    statePlayerDeck.length > 0 ? existingGame() : shuffleAndDeal();
   }, []);
 
   useEffect(() => {
-    if( playerDeck.length != 0 && computerDeck.length != 0 && 
-      ( playerDeck.length + computerDeck.length == deck.length )) {
+    if(!gameAuthorization) {
+      navigation.navigate('Dashboard');
+    }
+  }, [gameAuthorization]);
+
+  useEffect(() => {
+    if( playerDeck.length != 0 && computerDeck.length != 0 ) {
       newTurn();
     }
     if( (playerDeck.length == 0 && computerDeck.length > 0) ||
       (playerDeck.length > 0 && computerDeck.length == 0)) {
-      endGame();
+      finishGame();
     }
   }, [computerDeck]);
 
@@ -39,6 +65,13 @@ export default function BoardGame() {
       computerMove();
     }
   }, [computerPlay])
+
+  function existingGame() {
+    console.tron.log(statePlayerDeck);
+    console.tron.log(stateComputerDeck);
+    setPlayerDeck(statePlayerDeck);
+    setComputerDeck(stateComputerDeck);
+  }
 
   function shuffleAndDeal() {
     console.tron.log('ShuffleAndDeal');
@@ -153,8 +186,35 @@ export default function BoardGame() {
     }, 2000);
   }
 
-  function endGame() {
+  function handleSaveAndHome() {
+    console.tron.log("SaveAndHome");
+    const onGoingGame =  {
+      gameMode: gameMode,
+      playerDeck: playerDeck,
+      computerDeck: computerDeck,
+      playerTurn: playerTurn
+    }
+    dispatch(saveAndHome(onGoingGame));
+  }
+
+  function handleSurrender() {
+    console.tron.log("Surrender");
+    dispatch(endGame());
+  }
+
+  function newGame(){
+    setPlayerDeck({});
+    setComputerDeck({});
+    setPlayerTurn(true);
+    setPlayerCard({});
+    setComputerCard({});
+    setModalVisible(false);
+    shuffleAndDeal();
+  }
+
+  function finishGame() {
     console.tron.log("End Game");
+    setModalVisible(true);
   }
 
   function random() {
@@ -173,6 +233,36 @@ export default function BoardGame() {
             playerTurn={false}
           />
         </CardContainer>
+        <OptionsContainer>
+          <Score>
+            <ComputerScore>
+              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
+              <ScoreText>{computerDeck.length}</ScoreText>
+            </ComputerScore>
+            <ScoreSeparator />
+            <PlayerScore>
+              <Image source={require('../../assets/playing-cards.png')} style={{width: 24, height: 24}} />
+              <ScoreText>{playerDeck.length}</ScoreText>
+            </PlayerScore>
+          </Score>
+          <Options>
+            <HomeButton
+              press={false}
+              onPress={handleSaveAndHome}
+              prettier={{h:'40px',w:'100px',c:'#ffb300', ts:'12px'}}
+            >Home</HomeButton>
+            <PassButton
+              press={false}
+              onPress={() => {}}
+              prettier={{h:'40px',w:'100px',c:'#09a0f9', ts:'12px'}}
+            >Pass</PassButton>
+            <SurrenderButton
+              press={false}
+              onPress={handleSurrender}
+              prettier={{h:'40px',w:'100px',c:'#ff3437', ts:'12px'}}
+            >Surrender</SurrenderButton>
+          </Options>
+        </OptionsContainer>
         <CardContainer>
           <Card
             gamer="player"
@@ -182,6 +272,13 @@ export default function BoardGame() {
             playerTurn={playerTurn}
           />
         </CardContainer>
+
+        <Modal isVisible={modalVisible}>
+          <View style={{ flex: 1 }}>
+            <Text>Game Over!</Text>
+            <Button title="New Game" onPress={newGame} />
+          </View>
+        </Modal>
       </Container>
     </Background>
   );

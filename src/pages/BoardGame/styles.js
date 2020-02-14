@@ -15,7 +15,7 @@ export const CardContainer = styled.View`
 
 export const OptionsContainer = styled.View`
   width: 100%;
-  height: 50%;
+  height: 30%;
 
   flex-direction: row;
   justify-content: space-between;
