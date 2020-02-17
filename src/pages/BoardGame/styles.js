@@ -4,7 +4,7 @@ import Button from '../../components/Button';
 
 export const Container = styled.SafeAreaView`
   flex: 1;
-  justify-content: space-between
+  justify-content: space-between;
 `;
 
 export const CardContainer = styled.View`
@@ -66,3 +66,7 @@ export const HomeButton = styled(Button)``;
 export const PassButton = styled(Button)``;
 
 export const SurrenderButton = styled(Button)``;
+
+export const CancelButton = styled(Button)``;
+
+export const ConfirmButton = styled(Button)``;

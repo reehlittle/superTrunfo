@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Image, View, Text, Button } from 'react-native';
 import Modal from 'react-native-modal';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import {
   Container,
@@ -15,8 +16,19 @@ import {
   Options,
   HomeButton,
   PassButton,
-  SurrenderButton
+  SurrenderButton,
+  CancelButton,
+  ConfirmButton
 } from './styles';
+import {
+  ModalBody, 
+  ModalContainer, 
+  ModalHeader, 
+  ModalTitle, 
+  CloseButton,
+  Title, 
+} from '../../components/Modal/styles';
+
 import Background from '../../components/Background';
 import Card from '../../components/Card';
 
@@ -33,6 +45,7 @@ export default function BoardGame({ navigation }) {
   const [computerCard, setComputerCard] = useState([]);
   const [computerPlay, setComputerPlay] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [surrenderModalVisible, setSurrenderVisible] = useState(false);
 
   const dispatch = useDispatch();
   const gameMode = useSelector(state => state.game.onGoing.gameMode);
@@ -258,7 +271,7 @@ export default function BoardGame({ navigation }) {
             >Pass</PassButton>
             <SurrenderButton
               press={false}
-              onPress={handleSurrender}
+              onPress={() => {setSurrenderVisible(true)}}
               prettier={{h:'40px',w:'100px',c:'#ff3437', ts:'12px'}}
             >Surrender</SurrenderButton>
           </Options>
@@ -273,12 +286,60 @@ export default function BoardGame({ navigation }) {
           />
         </CardContainer>
 
-        <Modal isVisible={modalVisible}>
-          <View style={{ flex: 1 }}>
-            <Text>Game Over!</Text>
-            <Button title="New Game" onPress={newGame} />
-          </View>
+        <Modal isVisible={modalVisible} animationType={'fade'} transparent={true}>
+          <ModalContainer>
+            <ModalHeader>
+              <CloseButton title='x' onPress={() => {setModalVisible(false)}}>
+                <Icon name="close" size={12} color="#fff" />
+              </CloseButton>
+            </ModalHeader>
+            <ModalTitle>
+              <Title>You Win !!</Title>
+              <Title>New Game?</Title>
+            </ModalTitle>
+            <ModalBody>
+              <CancelButton
+                press={false}
+                onPress={handleSurrender}
+                prettier={{h: '60px',w: '130px',c: '#ff3437'}}
+                >No Thanks
+              </CancelButton>
+              <ConfirmButton
+                press={false}
+                onPress={newGame}
+                prettier={{h: '60px',w: '130px',c: '#4bbe19'}}
+                >Yes
+              </ConfirmButton>
+            </ModalBody>
+          </ModalContainer>
         </Modal>
+
+        <Modal isVisible={surrenderModalVisible} animationType={'fade'} transparent={true}>
+        <ModalContainer>
+          <ModalHeader>
+            <CloseButton title='x' onPress={() => {setSurrenderVisible(false)}}>
+              <Icon name="close" size={12} color="#fff" />
+            </CloseButton>
+          </ModalHeader>
+          <ModalTitle>
+            <Title>Surrender, are you sure?</Title>
+          </ModalTitle>
+          <ModalBody>
+            <CancelButton
+              press={false}
+              onPress={() => {setSurrenderVisible(false)}}
+              prettier={{h: '60px',w: '100px',c: '#ff3437'}}
+              >Cancel
+            </CancelButton>
+            <ConfirmButton
+              press={false}
+              onPress={handleSurrender}
+              prettier={{h: '60px',w: '100px',c: '#4bbe19'}}
+              >Confirm
+            </ConfirmButton>
+          </ModalBody>
+        </ModalContainer>
+      </Modal>
       </Container>
     </Background>
   );

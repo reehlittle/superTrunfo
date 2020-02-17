@@ -1,26 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Carousel from 'react-native-snap-carousel';
 
-import { Text } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, Image, Button } from 'react-native';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import { deckType }  from '../../data/decks';
+import styles from './carousel.styles';
 import Background from '../../components/Background';
 import {
   Container,
   NewGameButton,
-  ModalContainer,
-  ModalHeader,
-  ModalTitle,
-  ModalBody,
-  CloseButton,
-  Title,
   EasyButton,
   MediumButton,
   HardButton,
   CancelButton,
-  ConfirmButton
+  ConfirmButton,
+  CarouselContainer,
+  DeckContainer,
+  DeckImage
 } from './styles';
+import {
+  ModalContainer,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+  Title,
+  CloseButton
+} from '../../components/Modal/styles';
 import { newGameRequest, existingGameRequest } from '../../store/modules/game/actions';
 
 export default Dashboard = ({ navigation }) =>{
@@ -54,14 +62,38 @@ export default Dashboard = ({ navigation }) =>{
     }
   }, [gameAuthorization]);
 
+  function _renderItem ({ item, index }) {
+    return (
+      <DeckContainer>
+        <DeckImage source={{ uri: item.illustration }}/>
+      </DeckContainer>
+    );
+  }
+
+  const carouselRef = useRef(null)
+
   return (
     <Background>
       <Container>
+        <CarouselContainer>
+          <Carousel
+            ref={carouselRef}
+            data={deckType}
+            renderItem={_renderItem}
+            sliderWidth={Dimensions.get('window').width }
+            itemWidth={Dimensions.get('window').width * 0.5}
+            slideStyle={{ 
+              flex:1,
+              justifyContent: 'center'
+             }}
+          />
+        </CarouselContainer>
         <NewGameButton
           press={false}
           onPress={openNewGameModal}
           prettier={{h: '80px',w: '180px',c: '#ffb300'}}
-        >New Game</NewGameButton>
+        >New Game
+        </NewGameButton>
       </Container>
 
       <Modal isVisible={newGameModal} animationType={'fade'} transparent={true}>

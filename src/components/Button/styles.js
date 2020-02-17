@@ -4,6 +4,7 @@ import { darken } from 'polished';
 export const Container = styled.TouchableWithoutFeedback`
   align-items: center;
   justify-content: center;
+  background: green;
 `;
 
 export const ShadowView = styled.View`
